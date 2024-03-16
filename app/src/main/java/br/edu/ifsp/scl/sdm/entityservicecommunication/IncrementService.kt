@@ -19,7 +19,12 @@ class IncrementService : Service() { // IncrementService herda da classe Service
             super.handleMessage(msg) // chama o método handleMessage da classe Handler
             msg.data.getInt("VALUE")
                 .also { // pega o valor do Bundle (msg.data) e o atribui a variável it
+                    /*
                     InterEntityComunication.valueLiveData.postValue(it + 1) // incrementa o valor do MutableLiveData
+                    */
+                    Intent("INCREMENT_VALUE_ACTION").putExtra("VALUE", it + 1).apply { // cria o Intent carregando uma action INCREMENT_VALUE_ACTION e o VALUE com o valor incrementado
+                        sendBroadcast(this) // envia o Intent para o BroadcastReceiver
+                    }
                 }
             stopSelf() // para o serviço
         }
@@ -27,8 +32,8 @@ class IncrementService : Service() { // IncrementService herda da classe Service
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
 
-        intent?.getIntExtra("VALUE", -1)
-            ?.also { value -> // pega o valor do Intent (intent) e o atribui a variável value
+        intent.getIntExtra("VALUE", -1)
+            .also { value -> // pega o valor do Intent (intent) e o atribui a variável value
                 // InterEntityComunication.valueLiveData.postValue(value + 1) // incrementa o valor do MutableLiveData que funcionará como uma memória compartilhada
                 HandlerThread("IncrementThread").apply { // cria um HandlerThread para o Handler
                     start() // inicia o HandlerThread
